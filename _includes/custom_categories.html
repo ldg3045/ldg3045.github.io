@@ -1,0 +1,132 @@
+{% assign all_categories = site.categories | map: "first" | uniq | sort %}
+
+<div class="custom-categories">
+  {% for main_category in all_categories %}
+    {% assign category_posts = site.categories[main_category] %}
+    {% assign sub_categories = '' | split: '' %}
+    
+    {% for post in category_posts %}
+      {% if post.categories.size > 1 and post.categories[0] == main_category %}
+        {% unless sub_categories contains post.categories[1] %}
+          {% assign sub_categories = sub_categories | push: post.categories[1] %}
+        {% endunless %}
+      {% endif %}
+    {% endfor %}
+    
+    {% assign sub_categories = sub_categories | sort %}
+    {% assign sub_categories_size = sub_categories | size %}
+    
+    <div class="category-card">
+      <div class="category-header">
+        <i class="far fa-folder{% if sub_categories_size > 0 %}-open{% endif %} fa-fw"></i>
+        <a href="{{ '/categories/' | append: main_category | slugify | relative_url }}">{{ main_category }}</a>
+        <span class="category-count">
+          {{ site.categories[main_category].size }} 포스트
+          {% if sub_categories_size > 0 %}
+          , {{ sub_categories_size }} 하위 카테고리
+          {% endif %}
+        </span>
+        
+        {% if sub_categories_size > 0 %}
+          <span class="toggle-icon" data-target="sub-{{ main_category | slugify }}">
+            <i class="fas fa-angle-down"></i>
+          </span>
+        {% endif %}
+      </div>
+      
+      {% if sub_categories_size > 0 %}
+        <div class="sub-categories" id="sub-{{ main_category | slugify }}">
+          <ul>
+            {% for sub_category in sub_categories %}
+              <li>
+                <i class="far fa-folder fa-fw"></i>
+                <a href="{{ '/categories/' | append: sub_category | slugify | relative_url }}">{{ sub_category }}</a>
+                
+                {% assign sub_posts_count = 0 %}
+                {% for post in site.posts %}
+                  {% if post.categories.size > 1 and post.categories[0] == main_category and post.categories[1] == sub_category %}
+                    {% assign sub_posts_count = sub_posts_count | plus: 1 %}
+                  {% endif %}
+                {% endfor %}
+                
+                <span class="category-count">{{ sub_posts_count }} 포스트</span>
+              </li>
+            {% endfor %}
+          </ul>
+        </div>
+      {% endif %}
+    </div>
+  {% endfor %}
+</div>
+
+<style>
+.custom-categories {
+  margin-top: 2rem;
+}
+.category-card {
+  border: 1px solid var(--card-border-color);
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
+  overflow: hidden;
+}
+.category-header {
+  padding: 0.75rem 1rem;
+  background-color: var(--card-header-bg);
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+.category-header a {
+  margin: 0 0.5rem;
+  color: var(--link-color);
+  font-weight: 600;
+}
+.category-count {
+  font-size: 0.85rem;
+  color: var(--text-muted-color);
+}
+.toggle-icon {
+  position: absolute;
+  right: 1rem;
+  cursor: pointer;
+}
+.sub-categories {
+  padding: 0.5rem 0;
+  background-color: var(--card-bg);
+}
+.sub-categories ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.sub-categories li {
+  padding: 0.5rem 2rem;
+  display: flex;
+  align-items: center;
+}
+.sub-categories a {
+  margin: 0 0.5rem;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const toggleIcons = document.querySelectorAll('.toggle-icon');
+  toggleIcons.forEach(icon => {
+    icon.addEventListener('click', function() {
+      const targetId = this.getAttribute('data-target');
+      const targetElement = document.getElementById(targetId);
+      
+      if (targetElement.style.display === 'none' || targetElement.style.display === '') {
+        targetElement.style.display = 'block';
+        this.querySelector('i').classList.remove('fa-angle-right');
+        this.querySelector('i').classList.add('fa-angle-down');
+      } else {
+        targetElement.style.display = 'none';
+        this.querySelector('i').classList.remove('fa-angle-down');
+        this.querySelector('i').classList.add('fa-angle-right');
+      }
+    });
+  });
+});
+</script> 
