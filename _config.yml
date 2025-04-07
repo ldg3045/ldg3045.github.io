@@ -11,6 +11,9 @@ lang: ko-KR
 # Change to your timezone › https://kevinnovak.github.io/Time-Zone-Picker
 timezone: Asia/Seoul
 
+# 미래 날짜 포스트도 표시
+future: true
+
 # jekyll-seo-tag settings › https://github.com/jekyll/jekyll-seo-tag/blob/master/docs/usage.md
 # ↓ --------------------------
 
@@ -182,7 +185,6 @@ defaults:
       # DO NOT modify the following parameter unless you are confident enough
       # to update the code of all other post links in this project.
       permalink: /posts/:title/
-      future: true # 미래 날짜 포스트도 표시
   - scope:
       path: _drafts
     values:
